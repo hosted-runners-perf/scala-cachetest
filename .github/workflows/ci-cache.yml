@@ -1,0 +1,38 @@
+name: Scala Merge CI Cache
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/20 * * * *"
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: read
+
+jobs:
+  build_and_test:
+    name: Test
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        java: [11]
+    runs-on: ${{matrix.os}}
+    steps:
+      - run: git config --global core.autocrlf false
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: ${{matrix.java}}
+          cache: sbt
+
+      - name: Build
+        run: |
+          sbt setupPublishCore generateBuildCharacterPropertiesFile headerCheck publishLocal
