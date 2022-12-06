@@ -1,9 +1,9 @@
 name: Scala Merge CI
 
 on:
-  push:
-    branches: ['2.*.x']
   workflow_dispatch:
+  schedule:
+    - cron: "*/10 * * * *"
 
 defaults:
   run:
@@ -18,8 +18,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        java: [8, 11, 17]
+        os: [ubuntu-latest, windows-latest, mac-latest]
+        java: [11]
     runs-on: ${{matrix.os}}
     steps:
       - run: git config --global core.autocrlf false
@@ -36,8 +36,3 @@ jobs:
       - name: Build
         run: |
           sbt setupPublishCore generateBuildCharacterPropertiesFile headerCheck publishLocal
-
-      - name: Test
-        run: |
-          STARR=`cat buildcharacter.properties | grep ^maven.version.number | cut -d= -f2` && echo $STARR
-          sbt -Dstarr.version=$STARR setupValidateTest test:compile info testAll
