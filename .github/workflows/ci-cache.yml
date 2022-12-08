@@ -2,8 +2,8 @@ name: Scala Merge CI Cache
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "*/20 * * * *"
+  # schedule:
+  #   - cron: "*/20 * * * *"
 
 defaults:
   run:
